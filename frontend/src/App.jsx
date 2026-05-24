@@ -10,10 +10,10 @@ import './index.css';
 
 // ─── Nav config with org restrictions ─────────────────────────────────────────
 const NAV = [
-  { id: 'dashboard', label: 'Dashboard', icon: '🏠', section: 'main', orgs: null },
-  { id: 'batch', label: 'Batch Management', icon: '🏭', section: 'production', badge: 'Org1', orgs: ['Org1'] },
-  { id: 'transport', label: 'Transport', icon: '🚚', section: 'logistics', badge: 'Org2', orgs: ['Org2'] },
-  { id: 'trace', label: 'Full Traceability', icon: '🔍', section: 'consumer', badge: 'Org3', orgs: ['Org3'] },
+  { id: 'dashboard', label: 'Dashboard', section: 'main', orgs: null },
+  { id: 'batch', label: 'Batch Management', section: 'production', badge: 'Org1', orgs: ['Org1'] },
+  { id: 'transport', label: 'Transport', section: 'logistics', badge: 'Org2', orgs: ['Org2'] },
+  { id: 'trace', label: 'Full Traceability', section: 'consumer', badge: 'Org3', orgs: ['Org3'] },
 ];
 
 const SECTIONS = [
@@ -24,9 +24,9 @@ const SECTIONS = [
 ];
 
 const ORG_STYLE = {
-  Org1: { color: '#6366f1', emoji: '🏭' },
-  Org2: { color: '#0ea5e9', emoji: '🚚' },
-  Org3: { color: '#10b981', emoji: '🔍' },
+  Org1: { color: '#6366f1' },
+  Org2: { color: '#0ea5e9' },
+  Org3: { color: '#10b981' },
 };
 
 // ─── Main app shell (only rendered when authenticated) ────────────────────────
@@ -46,7 +46,6 @@ function AppShell() {
     if (!canAccess(NAV.find(n => n.id === page))) {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 16 }}>
-          <div style={{ fontSize: 64 }}>🔒</div>
           <h2 style={{ color: 'var(--text-primary)' }}>Access Denied</h2>
           <p style={{ color: 'var(--text-muted)' }}>
             This page is restricted. You are registered as <strong style={{ color: orgStyle.color }}>{user?.org}</strong>.
@@ -70,7 +69,6 @@ function AppShell() {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <div className="logo-icon">🔗</div>
           <div className="logo-text">Chain<span>Trace</span></div>
           <div className="logo-sub">Supply Chain Tracker</div>
         </div>
@@ -90,14 +88,13 @@ function AppShell() {
                     onClick={() => accessible && setPage(n.id)}
                     title={!accessible ? `Requires ${n.badge}` : ''}
                   >
-                    <span className="sidebar-item-icon">{n.icon}</span>
                     <span>{n.label}</span>
                     {n.badge && (
                       <span
                         className="sidebar-badge"
                         style={accessible ? { background: orgStyle.color } : {}}
                       >
-                        {accessible ? n.badge : '🔒'}
+                        {accessible ? n.badge : 'Locked'}
                       </span>
                     )}
                   </div>
@@ -117,7 +114,7 @@ function AppShell() {
           <div className="sidebar-user-info">
             <div className="sidebar-user-name">{user?.name}</div>
             <div className="sidebar-user-org" style={{ color: orgStyle.color }}>
-              {orgStyle.emoji} {user?.org}
+              {user?.org}
             </div>
           </div>
           <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-muted)' }}>▾</span>
@@ -134,7 +131,7 @@ function AppShell() {
 
         {/* Footer */}
         <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text-muted)' }}>
-          <div style={{ marginBottom: 4 }}>🧱 Hyperledger Fabric</div>
+          <div style={{ marginBottom: 4 }}>Hyperledger Fabric</div>
           <div>Channel: <span style={{ color: 'var(--accent-blue)', fontFamily: 'monospace' }}>mychannel</span></div>
           <div>Chaincode: <span style={{ color: 'var(--accent-cyan)', fontFamily: 'monospace' }}>batchcc</span></div>
         </div>
@@ -162,8 +159,7 @@ function Root() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
         <div className="glass-card" style={{ padding: 40, textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 16, animation: 'spin 1s linear infinite' }}>⚙️</div>
-          <p style={{ color: 'var(--text-muted)' }}>Loading…</p>
+          <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
         </div>
       </div>
     );

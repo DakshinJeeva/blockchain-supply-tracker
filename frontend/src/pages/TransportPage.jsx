@@ -140,16 +140,16 @@ export default function TransportPage() {
     }
 
     const TABS = [
-        { id: 'create', label: '🚚 Create' },
-        { id: 'track', label: '📡 Track Cargo' },
-        { id: 'complete', label: '✅ Complete' },
-        { id: 'read', label: '🔍 Query' },
+        { id: 'create', label: 'Create' },
+        { id: 'track', label: 'Track Cargo' },
+        { id: 'complete', label: 'Complete' },
+        { id: 'read', label: 'Query' },
     ];
 
     return (
         <div>
             <div className="page-header">
-                <h1 className="page-title">🚚 <span>Transport Management</span></h1>
+                <h1 className="page-title"><span>Transport Management</span></h1>
                 <p className="page-subtitle">Create, track, complete, and query transport shipments (Org2)</p>
             </div>
 
@@ -183,7 +183,6 @@ export default function TransportPage() {
             {tab === 'create' && (
                 <div className="card">
                     <div className="card-header">
-                        <div className="card-icon" style={{ background: 'rgba(6,182,212,.15)' }}>🚚</div>
                         <div>
                             <div className="card-title">Create Transport</div>
                             <div className="card-subtitle">Initiate a new shipment — only Product-Ready batches are shown</div>
@@ -279,7 +278,7 @@ export default function TransportPage() {
                                                 {b.type && (
                                                     <span className="badge badge-blue" style={{ fontSize: 11 }}>{b.type}</span>
                                                 )}
-                                                <span className="badge badge-green" style={{ marginLeft: 'auto', fontSize: 11 }}>✅ Product Ready</span>
+                                                <span className="badge badge-green" style={{ marginLeft: 'auto', fontSize: 11 }}>Product Ready</span>
                                             </label>
                                         );
                                     })}
@@ -300,7 +299,7 @@ export default function TransportPage() {
                             onClick={handleCreate}
                             disabled={loading || !ct.transportId || !ct.selectedBatchIds.length || !ct.location}
                         >
-                            {loading ? <Spinner /> : '🚚'} Create Transport
+                            {loading ? <Spinner /> : null} Create Transport
                         </button>
                     </div>
                 </div>
@@ -310,7 +309,6 @@ export default function TransportPage() {
             {tab === 'track' && (
                 <div className="card">
                     <div className="card-header">
-                        <div className="card-icon" style={{ background: 'rgba(245,158,11,.15)' }}>📡</div>
                         <div>
                             <div className="card-title">Track Cargo</div>
                             <div className="card-subtitle">Append a real-time tracking log to an active transport</div>
@@ -380,7 +378,7 @@ export default function TransportPage() {
                             onClick={handleTrack}
                             disabled={loading || !tk.transportId || !tk.temperature || !tk.speed || !tk.location}
                         >
-                            {loading ? <Spinner /> : '📡'} Send Tracking Log
+                            {loading ? <Spinner /> : null} Send Tracking Log
                         </button>
                     </div>
                 </div>
@@ -390,7 +388,6 @@ export default function TransportPage() {
             {tab === 'complete' && (
                 <div className="card">
                     <div className="card-header">
-                        <div className="card-icon" style={{ background: 'rgba(16,185,129,.15)' }}>✅</div>
                         <div>
                             <div className="card-title">Complete Transport</div>
                             <div className="card-subtitle">Mark a transport as DELIVERED</div>
@@ -450,7 +447,7 @@ export default function TransportPage() {
                             onClick={handleComplete}
                             disabled={loading || !cp.transportId || !cp.endLocation}
                         >
-                            {loading ? <Spinner /> : '✅'} Mark as Delivered
+                            {loading ? <Spinner /> : null} Mark as Delivered
                         </button>
                     </div>
                 </div>
@@ -460,7 +457,6 @@ export default function TransportPage() {
             {tab === 'read' && (
                 <div className="card">
                     <div className="card-header">
-                        <div className="card-icon" style={{ background: 'rgba(139,92,246,.15)' }}>🔍</div>
                         <div>
                             <div className="card-title">Query Transport</div>
                             <div className="card-subtitle">Read a transport record from the ledger</div>
@@ -493,7 +489,7 @@ export default function TransportPage() {
                     </div>
                     <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
                         <button className="btn btn-primary" onClick={handleRead} disabled={loading || !rd.transportId}>
-                            {loading ? <Spinner /> : '🔍'} Query Ledger
+                            {loading ? <Spinner /> : null} Query Ledger
                         </button>
                     </div>
                 </div>
@@ -503,13 +499,12 @@ export default function TransportPage() {
             {result && (
                 <div className="card" style={{ marginTop: 20 }}>
                     <div className="card-header">
-                        <div className="card-icon" style={{ background: 'rgba(59,130,246,.15)' }}>📋</div>
                         <div>
                             <div className="card-title">Ledger Response</div>
                             {result.status && (
                                 <div style={{ marginTop: 6 }}>
                                     <span className={`badge ${result.status === 'DELIVERED' ? 'badge-green' : 'badge-orange'}`}>
-                                        {result.status === 'DELIVERED' ? '✅' : '🚚'} {result.status}
+                                        {result.status}
                                     </span>
                                 </div>
                             )}
@@ -518,7 +513,7 @@ export default function TransportPage() {
 
                     {tab === 'read' && result.trackingLogs?.length > 0 && (
                         <div style={{ marginBottom: 20 }}>
-                            <div className="card-title" style={{ marginBottom: 12 }}>📡 Tracking Logs</div>
+                            <div className="card-title" style={{ marginBottom: 12 }}>Tracking Logs</div>
                             <div className="table-wrap">
                                 <table>
                                     <thead>

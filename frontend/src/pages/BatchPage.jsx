@@ -4,10 +4,10 @@ import Spinner from '../components/Spinner.jsx';
 import { createBatch, addDrying, addMixing, addProduct, getAllBatches } from '../api.js';
 
 const TABS = [
-    { id: 'create',  label: '🌿 Create Batch',  color: 'rgba(16,185,129,.15)',  accent: '#10b981' },
-    { id: 'drying',  label: '🔥 Drying',         color: 'rgba(245,158,11,.15)',  accent: '#f59e0b' },
-    { id: 'mixing',  label: '🧪 Mixing',          color: 'rgba(139,92,246,.15)', accent: '#8b5cf6' },
-    { id: 'product', label: '📦 Product Ready',   color: 'rgba(59,130,246,.15)', accent: '#3b82f6' },
+    { id: 'create',  label: 'Create Batch',  color: 'rgba(16,185,129,.15)',  accent: '#10b981' },
+    { id: 'drying',  label: 'Drying',         color: 'rgba(245,158,11,.15)',  accent: '#f59e0b' },
+    { id: 'mixing',  label: 'Mixing',          color: 'rgba(139,92,246,.15)', accent: '#8b5cf6' },
+    { id: 'product', label: 'Product Ready',   color: 'rgba(59,130,246,.15)', accent: '#3b82f6' },
 ];
 
 function now() { return new Date().toISOString().slice(0, 16); }
@@ -18,10 +18,10 @@ function StageBadge({ batch }) {
     const hasMixing  = batch.mixing?.txMeta;
     const hasDrying  = batch.drying?.txMeta;
 
-    if (hasProduct) return <span style={pill('#10b981')}>✅ Product Ready</span>;
-    if (hasMixing)  return <span style={pill('#8b5cf6')}>🧪 Mixing Done</span>;
-    if (hasDrying)  return <span style={pill('#f59e0b')}>🔥 Drying Done</span>;
-    return <span style={pill('#6b7280')}>🌿 Collected</span>;
+    if (hasProduct) return <span style={pill('#10b981')}>Product Ready</span>;
+    if (hasMixing)  return <span style={pill('#8b5cf6')}>Mixing Done</span>;
+    if (hasDrying)  return <span style={pill('#f59e0b')}>Drying Done</span>;
+    return <span style={pill('#6b7280')}>Collected</span>;
 }
 
 function pill(color) {
@@ -55,7 +55,7 @@ function BatchSelector({ batches, value, onChange, loading }) {
             fontSize: 13,
             fontWeight: 500,
         }}>
-            ⚠️ No batches available for this step yet. Complete the previous step first.
+        No batches available for this step yet. Complete the previous step first.
         </div>
     );
 
@@ -202,7 +202,7 @@ export default function BatchPage() {
         try {
             const data = await addProduct(bId3, { ...c3 });
             setResult(data);
-            showAlert('success', `🎉 Batch "${bId3}" is fully production-complete on the ledger!`);
+            showAlert('success', `Batch "${bId3}" is fully production-complete on the ledger!`);
             setBId3(''); setC3({ photo: '', dateTime: now() });
             await loadBatches();
         } catch (e) { showAlert('error', e.message); }
@@ -214,34 +214,12 @@ export default function BatchPage() {
     return (
         <div>
             <div className="page-header">
-                <h1 className="page-title">🏭 <span>Batch Management</span></h1>
+                <h1 className="page-title"><span>Batch Management</span></h1>
                 <p className="page-subtitle">
                     Each production step unlocks automatically — only batches that have completed the previous step appear in the next tab.
                 </p>
             </div>
 
-            {/* Pipeline indicator */}
-            <div style={{
-                display: 'flex', alignItems: 'center', gap: 0,
-                background: 'rgba(255,255,255,.03)',
-                border: '1px solid var(--border)',
-                borderRadius: 12, padding: '10px 20px',
-                marginBottom: 24, flexWrap: 'wrap', rowGap: 8,
-            }}>
-                {['🌿 Collect', '🔥 Dry', '🧪 Mix', '📦 Product', '🚚 Transport (Org2)'].map((s, i, arr) => (
-                    <span key={s} style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-                        <span style={{
-                            fontSize: 12, fontWeight: 600, padding: '3px 12px',
-                            borderRadius: 20,
-                            background: i < arr.length - 1 ? 'rgba(59,130,246,.1)' : 'rgba(6,182,212,.1)',
-                            color: i < arr.length - 1 ? '#3b82f6' : '#06b6d4',
-                        }}>{s}</span>
-                        {i < arr.length - 1 && (
-                            <span style={{ color: 'var(--text-muted)', fontSize: 11, padding: '0 4px' }}>→</span>
-                        )}
-                    </span>
-                ))}
-            </div>
 
             {/* Tab bar */}
             <div className="tabs" style={{ marginBottom: 0 }}>
@@ -283,7 +261,6 @@ export default function BatchPage() {
             {tab === 'create' && (
                 <div className="card">
                     <div className="card-header">
-                        <div className="card-icon" style={{ background: 'rgba(16,185,129,.15)' }}>🌿</div>
                         <div>
                             <div className="card-title">Step 1 — Collection</div>
                             <div className="card-subtitle">Register a new raw-material batch on the blockchain</div>
@@ -319,7 +296,7 @@ export default function BatchPage() {
                     <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
                         <button className="btn btn-success" onClick={handleCreate}
                             disabled={loading || !c0.batchId || !c0.type || !c0.location}>
-                            {loading ? <Spinner /> : '🌿'} Create Batch
+                            {loading ? <Spinner /> : null} Create Batch
                         </button>
                     </div>
                 </div>
@@ -329,7 +306,6 @@ export default function BatchPage() {
             {tab === 'drying' && (
                 <div className="card">
                     <div className="card-header" style={{ marginBottom: 20 }}>
-                        <div className="card-icon" style={{ background: 'rgba(245,158,11,.15)' }}>🔥</div>
                         <div>
                             <div className="card-title">Step 2 — Drying</div>
                             <div className="card-subtitle">
@@ -367,7 +343,7 @@ export default function BatchPage() {
                             <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
                                 <button className="btn btn-warning" onClick={handleDrying}
                                     disabled={loading || !c1.temperature || !c1.duration}>
-                                    {loading ? <Spinner /> : '🔥'} Record Drying for {bId1}
+                                    {loading ? <Spinner /> : null} Record Drying for {bId1}
                                 </button>
                             </div>
                         </>
@@ -379,7 +355,6 @@ export default function BatchPage() {
             {tab === 'mixing' && (
                 <div className="card">
                     <div className="card-header" style={{ marginBottom: 20 }}>
-                        <div className="card-icon" style={{ background: 'rgba(139,92,246,.15)' }}>🧪</div>
                         <div>
                             <div className="card-title">Step 3 — Mixing</div>
                             <div className="card-subtitle">
@@ -417,7 +392,7 @@ export default function BatchPage() {
                             <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
                                 <button className="btn btn-purple" onClick={handleMixing}
                                     disabled={loading || !c2.temperature || !c2.ingredients}>
-                                    {loading ? <Spinner /> : '🧪'} Record Mixing for {bId2}
+                                    {loading ? <Spinner /> : null} Record Mixing for {bId2}
                                 </button>
                             </div>
                         </>
@@ -429,7 +404,6 @@ export default function BatchPage() {
             {tab === 'product' && (
                 <div className="card">
                     <div className="card-header" style={{ marginBottom: 20 }}>
-                        <div className="card-icon" style={{ background: 'rgba(59,130,246,.15)' }}>📦</div>
                         <div>
                             <div className="card-title">Step 4 — Product Finalisation</div>
                             <div className="card-subtitle">
@@ -461,7 +435,7 @@ export default function BatchPage() {
                             </div>
                             <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
                                 <button className="btn btn-primary" onClick={handleProduct} disabled={loading}>
-                                    {loading ? <Spinner /> : '📦'} Finalise Product for {bId3}
+                                    {loading ? <Spinner /> : null} Finalise Product for {bId3}
                                 </button>
                             </div>
                         </>
@@ -473,7 +447,6 @@ export default function BatchPage() {
             {result && (
                 <div className="card" style={{ marginTop: 20 }}>
                     <div className="card-header" style={{ marginBottom: 16 }}>
-                        <div className="card-icon" style={{ background: activeTab ? activeTab.color : 'rgba(59,130,246,.15)' }}>📋</div>
                         <div className="card-title">Ledger Response</div>
                     </div>
                     <pre className="json-viewer">{JSON.stringify(result, null, 2)}</pre>

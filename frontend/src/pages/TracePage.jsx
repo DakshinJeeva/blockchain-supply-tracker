@@ -13,11 +13,10 @@ function KV({ label, value }) {
     );
 }
 
-function Section({ title, icon, color, children }) {
+function Section({ title, color, children }) {
     return (
         <div className="trace-section">
             <div className="trace-section-title">
-                <span style={{ fontSize: 16 }}>{icon}</span>
                 <span style={{ color }}>{title}</span>
             </div>
             {children}
@@ -26,10 +25,10 @@ function Section({ title, icon, color, children }) {
 }
 
 const STEP_META = [
-    { key: 'collection', label: 'Collection', icon: '🌿', color: 'var(--accent-green)' },
-    { key: 'drying', label: 'Drying', icon: '🔥', color: 'var(--accent-orange)' },
-    { key: 'mixing', label: 'Mixing', icon: '🧪', color: 'var(--accent-purple)' },
-    { key: 'product', label: 'Product', icon: '📦', color: 'var(--accent-blue)' },
+    { key: 'collection', label: 'Collection', color: 'var(--accent-green)' },
+    { key: 'drying',     label: 'Drying',     color: 'var(--accent-orange)' },
+    { key: 'mixing',     label: 'Mixing',     color: 'var(--accent-purple)' },
+    { key: 'product',    label: 'Product',    color: 'var(--accent-blue)' },
 ];
 
 function stepStatus(obj) {
@@ -55,13 +54,12 @@ export default function TracePage() {
     return (
         <div>
             <div className="page-header">
-                <h1 className="page-title">🔍 <span>Full Traceability</span></h1>
+                <h1 className="page-title"><span>Full Traceability</span></h1>
                 <p className="page-subtitle">Consumer-level view — trace a batch through the entire supply chain (Org3)</p>
             </div>
 
             <div className="card">
                 <div className="card-header">
-                    <div className="card-icon" style={{ background: 'rgba(6,182,212,.15)' }}>🔍</div>
                     <div>
                         <div className="card-title">GetFullBatchDetails</div>
                         <div className="card-subtitle">Enter a batch ID to retrieve its complete history from the ledger</div>
@@ -77,7 +75,7 @@ export default function TracePage() {
                         style={{ flex: 1 }}
                     />
                     <button className="btn btn-cyan" onClick={handleTrace} disabled={loading || !batchId}>
-                        {loading ? <Spinner /> : '🔍'} Trace
+                        {loading ? <Spinner /> : null} Trace
                     </button>
                 </div>
             </div>
@@ -93,7 +91,6 @@ export default function TracePage() {
                         marginBottom: 20,
                         display: 'flex', alignItems: 'center', gap: 20
                     }}>
-                        <div style={{ fontSize: 40 }}>🏷️</div>
                         <div>
                             <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>Batch ID</div>
                             <div style={{ fontSize: 24, fontWeight: 800, fontFamily: 'JetBrains Mono, monospace', color: 'var(--accent-blue)' }}>
@@ -103,7 +100,7 @@ export default function TracePage() {
                         <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                             {STEP_META.map(s => (
                                 <span key={s.key} className={`badge ${stepStatus(trace[s.key]) ? 'badge-green' : 'badge-red'}`}>
-                                    {s.icon} {s.label}
+                                    {s.label}
                                 </span>
                             ))}
                         </div>
@@ -112,7 +109,6 @@ export default function TracePage() {
                     {/* Timeline */}
                     <div className="card" style={{ marginBottom: 20 }}>
                         <div className="card-header">
-                            <div className="card-icon" style={{ background: 'rgba(59,130,246,.15)' }}>📋</div>
                             <div>
                                 <div className="card-title">Production Timeline</div>
                             </div>
@@ -125,22 +121,22 @@ export default function TracePage() {
                                     <div className="timeline-item" key={s.key}>
                                         <div className="timeline-line">
                                             <div className={`timeline-dot ${done ? 'done' : 'pending'}`}>
-                                                {done ? '✓' : s.icon}
+                                                {done ? '✓' : i + 1}
                                             </div>
                                             {i < STEP_META.length - 1 && <div className="timeline-connector" />}
                                         </div>
                                         <div className="timeline-content">
                                             <div className="timeline-title" style={{ color: done ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                                                {s.icon} {s.label}
+                                                {s.label}
                                             </div>
                                             {done ? (
                                                 <div className="timeline-meta">
-                                                    {data.dateTime && <span>🕒 {data.dateTime}</span>}
-                                                    {data.location && <span>📍 {data.location}</span>}
-                                                    {data.type && <span>🏷️ {data.type}</span>}
-                                                    {data.temperature && <span>🌡️ {data.temperature}</span>}
-                                                    {data.duration && <span>⏱️ {data.duration}</span>}
-                                                    {data.ingredients && <span>🧂 {data.ingredients}</span>}
+                                                    {data.dateTime    && <span>{data.dateTime}</span>}
+                                                    {data.location    && <span>{data.location}</span>}
+                                                    {data.type        && <span>{data.type}</span>}
+                                                    {data.temperature && <span>{data.temperature}</span>}
+                                                    {data.duration    && <span>{data.duration}</span>}
+                                                    {data.ingredients && <span>{data.ingredients}</span>}
                                                 </div>
                                             ) : (
                                                 <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Not recorded yet</div>
@@ -154,25 +150,25 @@ export default function TracePage() {
 
                     {/* Production Details Grid */}
                     <div className="trace-grid">
-                        <Section title="Collection" icon="🌿" color="var(--accent-green)">
-                            <KV label="Type" value={trace.collection?.type} />
-                            <KV label="Location" value={trace.collection?.location} />
+                        <Section title="Collection" color="var(--accent-green)">
+                            <KV label="Type"       value={trace.collection?.type} />
+                            <KV label="Location"   value={trace.collection?.location} />
                             <KV label="Date & Time" value={trace.collection?.dateTime} />
-                            <KV label="Photo" value={trace.collection?.photo} />
+                            <KV label="Photo"      value={trace.collection?.photo} />
                         </Section>
-                        <Section title="Drying" icon="🔥" color="var(--accent-orange)">
+                        <Section title="Drying" color="var(--accent-orange)">
                             <KV label="Temperature" value={trace.drying?.temperature} />
-                            <KV label="Duration" value={trace.drying?.duration} />
+                            <KV label="Duration"    value={trace.drying?.duration} />
                             <KV label="Date & Time" value={trace.drying?.dateTime} />
                         </Section>
-                        <Section title="Mixing" icon="🧪" color="var(--accent-purple)">
+                        <Section title="Mixing" color="var(--accent-purple)">
                             <KV label="Temperature" value={trace.mixing?.temperature} />
                             <KV label="Ingredients" value={trace.mixing?.ingredients} />
                             <KV label="Date & Time" value={trace.mixing?.dateTime} />
                         </Section>
-                        <Section title="Product" icon="📦" color="var(--accent-blue)">
+                        <Section title="Product" color="var(--accent-blue)">
                             <KV label="Date & Time" value={trace.product?.dateTime} />
-                            <KV label="Photo" value={trace.product?.photo} />
+                            <KV label="Photo"       value={trace.product?.photo} />
                         </Section>
                     </div>
 
@@ -180,7 +176,6 @@ export default function TracePage() {
                     {trace.transport?.length > 0 && (
                         <div className="card" style={{ marginTop: 20 }}>
                             <div className="card-header">
-                                <div className="card-icon" style={{ background: 'rgba(6,182,212,.15)' }}>🚚</div>
                                 <div>
                                     <div className="card-title">Transport History</div>
                                     <div className="card-subtitle">{trace.transport.length} shipment(s)</div>
@@ -199,24 +194,24 @@ export default function TracePage() {
                                             <span className="mono" style={{ color: 'var(--accent-cyan)', fontSize: 15, fontWeight: 700 }}>{t.transportId}</span>
                                         </div>
                                         <span className={`badge ${t.status === 'DELIVERED' ? 'badge-green' : 'badge-orange'}`}>
-                                            {t.status === 'DELIVERED' ? '✅' : '🚚'} {t.status}
+                                            {t.status}
                                         </span>
                                     </div>
                                     <div className="trace-grid" style={{ marginBottom: t.trackingLogs?.length > 0 ? 16 : 0 }}>
                                         <div>
-                                            <div className="kv-row"><span className="kv-key">Start Location</span><span className="kv-value">📍 {t.startLocation}</span></div>
-                                            <div className="kv-row"><span className="kv-key">Start Time</span><span className="kv-value">🕒 {t.startTime}</span></div>
+                                            <div className="kv-row"><span className="kv-key">Start Location</span><span className="kv-value">{t.startLocation}</span></div>
+                                            <div className="kv-row"><span className="kv-key">Start Time</span><span className="kv-value">{t.startTime}</span></div>
                                         </div>
                                         <div>
-                                            {t.endLocation && <div className="kv-row"><span className="kv-key">End Location</span><span className="kv-value">📍 {t.endLocation}</span></div>}
-                                            {t.endTime && <div className="kv-row"><span className="kv-key">End Time</span><span className="kv-value">🕒 {t.endTime}</span></div>}
+                                            {t.endLocation && <div className="kv-row"><span className="kv-key">End Location</span><span className="kv-value">{t.endLocation}</span></div>}
+                                            {t.endTime     && <div className="kv-row"><span className="kv-key">End Time</span><span className="kv-value">{t.endTime}</span></div>}
                                         </div>
                                     </div>
 
                                     {t.trackingLogs?.length > 0 && (
                                         <>
                                             <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
-                                                📡 Tracking Logs ({t.trackingLogs.length})
+                                                Tracking Logs ({t.trackingLogs.length})
                                             </div>
                                             <div className="table-wrap">
                                                 <table>
@@ -228,9 +223,9 @@ export default function TracePage() {
                                                             <tr key={li}>
                                                                 <td><span className="badge badge-purple">{li + 1}</span></td>
                                                                 <td className="mono" style={{ fontSize: 11, color: 'var(--text-muted)' }}>{log.timestamp}</td>
-                                                                <td>📍 {log.location}</td>
-                                                                <td>🌡️ {log.temperature}</td>
-                                                                <td>⚡ {log.speed}</td>
+                                                                <td>{log.location}</td>
+                                                                <td>{log.temperature}</td>
+                                                                <td>{log.speed}</td>
                                                             </tr>
                                                         ))}
                                                     </tbody>
@@ -246,7 +241,7 @@ export default function TracePage() {
                     {/* Raw JSON */}
                     <details style={{ marginTop: 20 }}>
                         <summary style={{ cursor: 'pointer', padding: '12px 20px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: 14, color: 'var(--text-dim)', listStyle: 'none' }}>
-                            🔎 View Raw Ledger Data (JSON)
+                            View Raw Ledger Data (JSON)
                         </summary>
                         <div className="card" style={{ borderTop: 0, borderRadius: '0 0 var(--radius-md) var(--radius-md)' }}>
                             <pre className="json-viewer">{JSON.stringify(trace, null, 2)}</pre>
