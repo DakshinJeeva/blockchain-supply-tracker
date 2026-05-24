@@ -1,0 +1,15 @@
+# Persistent Ledger Volume Override for Org3
+# Overrides the anonymous peer0.org3.example.com volume with the
+# named external volume fabric_ledger_peer0_org3 so ledger data
+# survives network restarts.
+#
+# Created once by setup-volumes.sh
+
+networks:
+  test:
+    name: fabric_test
+
+volumes:
+  peer0.org3.example.com:
+    external: true
+    name: fabric_ledger_peer0_org3

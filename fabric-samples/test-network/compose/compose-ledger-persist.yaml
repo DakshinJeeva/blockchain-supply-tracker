@@ -15,3 +15,5 @@ volumes:
     name: fabric_ledger_peer0_org1
   peer0.org2.example.com:
     name: fabric_ledger_peer0_org2
+  peer0.org3.example.com:
+    name: fabric_ledger_peer0_org3
