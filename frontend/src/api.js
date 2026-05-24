@@ -35,10 +35,12 @@ export const readBatch = (id) => request('GET', `/batch/${id}`);
 export const getAllBatches = () => request('GET', '/batches');
 
 // ─── Transport ─────────────────────────────────────────────────────────────────
+export const getEligibleBatches = () => request('GET', '/batches/eligible');
 export const createTransport = (data) => request('POST', '/transport', data);
 export const trackCargo = (id, data) => request('POST', `/transport/${id}/track`, data);
 export const completeTransport = (id, data) => request('POST', `/transport/${id}/complete`, data);
 export const readTransport = (id) => request('GET', `/transport/${id}`);
+export const getAllTransports = () => request('GET', '/transports');
 
 // ─── Trace ─────────────────────────────────────────────────────────────────────
 export const getFullTrace = (id) => request('GET', `/trace/${id}`);

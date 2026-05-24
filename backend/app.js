@@ -65,6 +65,25 @@ function saveBatchId(batchId) {
     }
 }
 
+// ─── Transport ID Registry (persistent volume — survives server restarts) ────────
+const TRANSPORTS_REGISTRY_PATH = path.join(__dirname, 'transports-registry.json');
+
+function readTransportRegistry() {
+    try {
+        return JSON.parse(fs.readFileSync(TRANSPORTS_REGISTRY_PATH, 'utf8')).transportIds || [];
+    } catch {
+        return [];
+    }
+}
+
+function saveTransportId(transportId) {
+    const ids = readTransportRegistry();
+    if (!ids.includes(transportId)) {
+        ids.push(transportId);
+        fs.writeFileSync(TRANSPORTS_REGISTRY_PATH, JSON.stringify({ transportIds: ids }, null, 2));
+    }
+}
+
 function findUserByGoogleId(googleId) {
     return readUsers().find(u => u.googleId === googleId) || null;
 }
@@ -810,7 +829,65 @@ app.post('/transport', requireOrg('Org2'), async (req, res) => {
         const { transportId, batchIds, startTime, location } = req.body;
         const initiatedBy = req.user.email;
         const result = await invoke('Org2MSP', 'CreateTransport', [transportId, JSON.stringify(batchIds), startTime, location, initiatedBy], req.user.id);
+        saveTransportId(transportId); // persist ID for /transports listing
         res.json({ success: true, data: result });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+app.get('/transports', requireOrg('Org2'), async (req, res) => {
+    try {
+        const ids = readTransportRegistry();
+        const transports = [];
+        for (const id of ids) {
+            try {
+                const transport = await query('Org2MSP', 'ReadTransport', [id], req.user.id);
+                transports.push(transport);
+            } catch {
+                // transport not found on ledger — skip
+            }
+        }
+        res.json({ success: true, data: transports });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// Eligible batches for Org2 transport creation:
+// - All 4 Org1 production steps done (product.txMeta exists)
+// - Not already assigned to any existing transport
+app.get('/batches/eligible', requireOrg('Org2'), async (req, res) => {
+    try {
+        // Collect all batch IDs already assigned to a transport
+        const transportIds = readTransportRegistry();
+        const assignedBatchIds = new Set();
+        for (const tid of transportIds) {
+            try {
+                const transport = await query('Org2MSP', 'ReadTransport', [tid], req.user.id);
+                (transport.batchIds || []).forEach(bid => assignedBatchIds.add(bid));
+            } catch {
+                // skip missing transports
+            }
+        }
+
+        // Query all known batches and filter to eligible ones
+        const batchIds = readBatchRegistry();
+        const eligible = [];
+        for (const id of batchIds) {
+            try {
+                // Batches live in Org1MSP but are readable cross-org via shared channel
+                const batch = await query('Org2MSP', 'ReadBatch', [id], req.user.id);
+                const isProductReady = batch.product && batch.product.txMeta;
+                const isNotAssigned = !assignedBatchIds.has(id);
+                if (isProductReady && isNotAssigned) {
+                    eligible.push({ batchId: batch.batchId, type: batch.collection?.type || '' });
+                }
+            } catch {
+                // batch not on ledger — skip
+            }
+        }
+        res.json({ success: true, data: eligible });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
@@ -840,7 +917,7 @@ app.post('/transport/:id/complete', requireOrg('Org2'), async (req, res) => {
 
 app.get('/transport/:id', requireOrg('Org2'), async (req, res) => {
     try {
-        const result = await query('Org2MSP', 'ReadTransport', [req.params.id]);
+        const result = await query('Org2MSP', 'ReadTransport', [req.params.id], req.user.id);
         res.json({ success: true, data: result });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
@@ -853,7 +930,7 @@ app.get('/transport/:id', requireOrg('Org2'), async (req, res) => {
 
 app.get('/trace/:id', requireOrg('Org3'), async (req, res) => {
     try {
-        const result = await query('Org3MSP', 'GetFullBatchDetails', [req.params.id]);
+        const result = await query('Org3MSP', 'GetFullBatchDetails', [req.params.id], req.user.id);
         res.json({ success: true, data: result });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
